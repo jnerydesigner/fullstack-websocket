@@ -1,0 +1,35 @@
+version: '3.5'
+
+services:
+  postgres_websocket:
+    container_name: postgres_websocket
+    image: postgres
+    env_file:
+      - '.env.websocket'
+    volumes:
+       - postgreswebsocket:/data/postgres_websocket
+    ports:
+      - "5433:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+    
+  cache:
+    image: redis:6.2-alpine
+    container_name: redis_container
+    restart: always
+    ports:
+      - '6379:6379'
+    network_mode: bridge
+    command: redis-server --save 20 1 --loglevel warning --requirepass 123456
+    volumes: 
+      - cache:/data
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+    postgreswebsocket:
+    cache:
+      driver: local
